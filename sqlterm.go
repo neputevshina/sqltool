@@ -9,8 +9,6 @@ import (
 	"github.com/jackc/pgx"
 )
 
-var dohead = flag.Bool("h", false, "print query's header")
-
 func main() {
 	flag.Parse()
 	erf := func(err error) {
@@ -26,20 +24,14 @@ func main() {
 
 	os.Args[0] = strings.TrimPrefix(os.Args[0], "./")
 	os.Args[0] = strings.TrimPrefix(os.Args[0], "sql")
-	for i := range os.Args {
-		if strings.HasPrefix(os.Args[i], "-h") {
-			os.Args = append(os.Args[:i], os.Args[i+1:]...)
-		}
-	}
 
 	q, err := conn.Query(strings.Join(os.Args, " "))
 	erf(err)
-	if dohead != nil && *dohead {
-		for _, d := range q.FieldDescriptions() {
-			fmt.Print(string(d.Name), "\t")
-		}
-		fmt.Println()
+	for _, d := range q.FieldDescriptions() {
+		fmt.Print(string(d.Name), "\t")
 	}
+	fmt.Println()
+
 	for q.Next() {
 		vs, err := q.Values()
 		erf(err)
@@ -48,5 +40,9 @@ func main() {
 		}
 		fmt.Println()
 	}
+	if err := q.Err(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
+
 	conn.Close()
 }

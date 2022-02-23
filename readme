@@ -1,2 +1,23 @@
 MAKE SQL QUERIES RIGHT FROM YOUR TERMINAL!!!
-todo: readme...
+
+the plan:
+
+- compile this program
+- set the DATABASE_URL envvar to your postgresql db's connection string.
+  example in fish shell:
+	set -xg DATABASE_URL 'postgresql://localhost:5432/public'
+- rename the compiled program to the needed sql command 
+  like “select”, “update”, “drop”, “alter”, etc...
+- put it to the any place where your shell will find it.
+- ???
+- PROFIT!
+
+works only with postgres because it uses pgx. 
+errors are going to stderr, ‘\t’ separated table data with the header goes to stdout.
+
+here's the example of how to calculate the number of rows in the table:
+
+	~/ select "*" from test_numeric | sed 1d | wc
+		5	15	108
+
+i suggest you to put those commands into /opt/sql directory.
